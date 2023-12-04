@@ -1,131 +1,67 @@
 const fs = require('fs');
-const numberRegex = /\d/g;
-
-// regex for everything except numbers, letter, whitespaces and dots
-const specialCharRegex = /[^a-zA-Z0-9\s\.]/g;
-
-const getNumbers = (input) => {
-    let result = [];
-    let currentNumber = '';
-    let startIndex = null;
-
-    for (let i = 0; i < input.length; i++) {
-        if (/\d/.test(input[i])) {
-            if (currentNumber === '') {
-                startIndex = i;
-            }
-            currentNumber += input[i];
-        } else if (currentNumber !== '') {
-            result.push({ index: startIndex, number: parseInt(currentNumber) });
-            currentNumber = '';
-        }
-    }
-
-    if (currentNumber !== '') {
-        result.push({ index: startIndex, number: parseInt(currentNumber) });
-    }
-
-    return result;
-}
+const testing = false;
 
 const solve = (input) => {
+    // remove all windows line breaks
+    input = input.replace(/\r/g, '');
+    // split on line breaks
+    const lines = input.split('\n');
 
-    let lines = input.map(line => {
-        // remove the /r from the line
-        line = line.replace('\r', '');
-        return line;
-    });
-
+    // regex for all numbers and . in string
+    const checkRegex = /[0-9.]/;
     let validNumbers = [];
 
-    lines.forEach(line => {
-        let lineData = {
-            index: lines.indexOf(line),
-            line: line,
-            numbers: []
-        }
-        let numbers = getNumbers(line);
-
-        // for each number, 
-        numbers.forEach(number => {
-            let leftChar = line[number.index - 1];
-            let rightChar = line[number.index + number.number.toString().length];
-
-            // check if the number is next to a special character on the original line
-            if (specialCharRegex.test(leftChar)) {
-                validNumbers.push(number);
-                lineData.numbers.push(number);
-            }
-
-            if (specialCharRegex.test(rightChar)) {
-                validNumbers.push(number);
-                lineData.numbers.push(number);
-            }
-
-            let lineAbove = lines[lines.indexOf(line) - 1];
-            let lineBelow = lines[lines.indexOf(line) + 1];
-
-            if (lineAbove) {
-                // check if there is a special character on one of the indexes that the number is on
-                let leftChar = lineAbove[number.index - 1];
-                let rightChar = lineAbove[number.index + number.number.toString().length];
-
-                if (specialCharRegex.test(leftChar) || specialCharRegex.test(rightChar)) {
-                    validNumbers.push(number);
-                    lineData.numbers.push(number);
-                }
-
-                // check each character in between and including the left and right characters
-                for (let i = number.index; i < number.index + number.number.toString().length; i++) {
-                    if (specialCharRegex.test(lineAbove[i])) {
-                        validNumbers.push(number);
-                        lineData.numbers.push(number);
-                    }
-                }
-            }
-
-            if (lineBelow) {
-                // check if there is a special character on one of the indexes that the number is on
-                let leftChar = lineBelow[number.index - 1];
-                let rightChar = lineBelow[number.index + number.number.toString().length];
-
-                if (specialCharRegex.test(leftChar) || specialCharRegex.test(rightChar)) {
-                    validNumbers.push(number);
-                    lineData.numbers.push(number);
-                }
-
-                 // check each character in between and including the left and right characters
-                for (let i = number.index; i < number.index + number.number.toString().length; i++) {
-                    if (specialCharRegex.test(lineBelow[i])) {
-                        validNumbers.push(number);
-                        lineData.numbers.push(number);
-                    }
-                }
-            }
-
+    lines.map((line, lineIndex) => {
+        const regex = /\d+/g;
+        let numbers = [...line.matchAll(regex)].map(match => {
+            return {
+                value: parseInt(match[0]),
+                index: match.index,
+                length: match[0].length
+            };
         });
 
-        console.log(lineData);
-        console.log('-------------------');
-    });
+        if (numbers) {
+            numbers.forEach(number => {
+               const index = number.index;
+               const length = number.length;
+               const num = number.value;
 
-    // add all the numbers in validNumbers
-    let sum = 0;
-    validNumbers.forEach(number => {
-        sum += number.number;
-    });
+               if ((!checkRegex.test(line[index + length]) && line[index+length] != undefined) || (!checkRegex.test(line[index - 1]) && lines[index - 1] != undefined)) {
+                   console.log('valid numberb (l/r): ', num);
+                   validNumbers.push(num);
+                   return;
+               }
 
-    // console.table(validNumbers);
+               for (let i = index - 1; i < index + length + 1; i++) {
+                    if (lines[lineIndex -1] && lines[lineIndex - 1][i] != undefined) {
+                        if (lines[lineIndex -1] && !checkRegex.test(lines[lineIndex - 1][i])) {
+                            console.log('valid number (t): ', num);
+                            validNumbers.push(num);
+                            return;
+                        }
+                    }
+                    if (lines[lineIndex + 1] && lines[lineIndex + 1][i] != undefined) {
+                        if (!checkRegex.test(lines[lineIndex + 1][i])) {
+                            console.log('valid number (b): ', num);
+                            validNumbers.push(num);
+                            return;
+                        }
+                    }
+               }
+            });
+        }
+    });
+    
+    sum = validNumbers.reduce((a, b) => {
+        return a + b;
+    });
 
     return sum;
-};
+}
 
-fs.readFile('./test_input.txt', 'utf8', (err, data) => {
-    if (err) throw err;
-    const inputArray = data.split('\n');
-    console.log(solve(inputArray));
+
+// read input file and parse it into array of lines
+fs.readFile(testing ? 'test_input.txt' : 'input.txt', 'utf8', (err, data) => {
+    console.log(solve(data));
 });
-
-
-// // 557877 -> too low
-// // 560600 -> too high
