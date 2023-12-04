@@ -28,7 +28,6 @@ const solve = (input) => {
                const num = number.value;
 
                if ((!checkRegex.test(line[index + length]) && line[index+length] != undefined) || (!checkRegex.test(line[index - 1]) && lines[index - 1] != undefined)) {
-                   console.log('valid numberb (l/r): ', num);
                    validNumbers.push(num);
                    return;
                }
@@ -36,14 +35,12 @@ const solve = (input) => {
                for (let i = index - 1; i < index + length + 1; i++) {
                     if (lines[lineIndex -1] && lines[lineIndex - 1][i] != undefined) {
                         if (lines[lineIndex -1] && !checkRegex.test(lines[lineIndex - 1][i])) {
-                            console.log('valid number (t): ', num);
                             validNumbers.push(num);
                             return;
                         }
                     }
                     if (lines[lineIndex + 1] && lines[lineIndex + 1][i] != undefined) {
                         if (!checkRegex.test(lines[lineIndex + 1][i])) {
-                            console.log('valid number (b): ', num);
                             validNumbers.push(num);
                             return;
                         }
