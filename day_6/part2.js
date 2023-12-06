@@ -1,4 +1,3 @@
-// require fs
 const fs = require('fs');
 const testing = false;
 
@@ -17,13 +16,13 @@ const formatData = (data) => {
 }
 
 const getPushRange = (time, distance) => {
-    let discriminant = Math.pow(-time, 2) - 4 * 1 * distance;
+    let discriminant = Math.pow(-time, 2) - 4 * distance;
 
     if (discriminant < 0) {
         return false;
     } else {
-        let x1 = Math.floor(Math.abs((-time + Math.sqrt(discriminant)) / (2 * 1)) + 1);
-        let x2 = Math.ceil(Math.abs((-time - Math.sqrt(discriminant)) / (2 * 1)) - 1);
+        let x1 = Math.floor(Math.abs((-time + Math.sqrt(discriminant)) / 2 ) + 1);
+        let x2 = Math.ceil(Math.abs((-time - Math.sqrt(discriminant)) / 2) - 1);
 
         console.log("The solutions are " + x1 + " and " + x2);
         
@@ -34,7 +33,7 @@ const getPushRange = (time, distance) => {
 
 const solve = (input) => {
     console.time('solve');
-    
+
     const race = formatData(input);
     range = getPushRange(race.time, race.distance)
 
