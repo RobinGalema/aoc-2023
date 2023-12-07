@@ -58,12 +58,8 @@ const findNextNumber = (number, rules, index, callback) => {
             let max = rule[1] + rule[2];
 
             if (number >= rule[1] && number <= max) {
-                for (let i = 0; i < rule[2]; i++) {
-                    if (number == rule[1] + i) {
-                        nextNumber = rule[0] + i;
-                        return;
-                    }
-                }
+                nextNumber = rule[0] - rule[1] + number;
+                return;
             }
         });
 
@@ -76,19 +72,19 @@ const findNextNumber = (number, rules, index, callback) => {
 }
 
 const solve = (input) => {
+    console.time("solve");
     const rules = formatInput(input);
     seeds.forEach(seed => {
         findNextNumber(seed, rules, 0, (nextNumber) => {
             finalNumbers.push(nextNumber);
-            console.log('Final Number is: ', nextNumber);
 
             // smallest number in finalNumbers
             if (finalNumbers.length == seeds.length) {
-                console.log('------------------');
                 console.log('The Smallest Number is: ', Math.min(...finalNumbers));
             }
         });
     });
+    console.timeEnd("solve");
 };
 
 // read input file and parse it into array of lines
