@@ -25,7 +25,6 @@ const formatInput = (data) => {
 
 // Function to calculate gcd (Greatest Common Divisor)
 const gcd = (a, b) => {
-    console.log(a, b);
     if (b === 0) {
         return a;
     } else {
@@ -57,8 +56,6 @@ const solve = (data) => {
         }
         return stepCount;
     });
-
-    console.log(steps);
 
     // Find the lcm of the number of steps
     let totalSteps = steps.reduce(lcm);
